@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HLA3057 電子教學套 - 建議與小組討論</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;900&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --book-width: 500px;
+            --book-height: 380px;
+            --bg-color: #e8e8e8;
+            --page-bg: #fff;
+            --text-color: #3e2723;
+            --accent-color: #5d4037;
+            --game-btn-color: #2e7d32; /* 遊戲按鈕用綠色，區分影片 */
+        }
+
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            font-family: "Microsoft JhengHei", "Noto Serif TC", serif;
+            overflow: hidden;
+        }
+
+        /* 控制按鈕 */
+        .controls {
+            position: absolute;
+            bottom: 20px;
+            z-index: 100;
+            display: flex;
+            gap: 15px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: var(--text-color);
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            font-family: "Microsoft JhengHei", serif;
+            letter-spacing: 1px;
+        }
+
+        button:hover {
+            background: var(--accent-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        button:disabled {
+            background: #9e9e9e;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        /* 書籍主體 */
+        .scene {
+            width: var(--book-width);
+            height: var(--book-height);
+            perspective: 1500px;
+            position: relative;
+        }
+
+        .book {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s;
+        }
+
+        .page {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: left center;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.645, 0.045, 0.355, 1);
+            background-color: var(--page-bg);
+            box-shadow: 2px 2px 15px rgba(0,0,0,0.15);
+            border-radius: 2px;
+        }
+
+        /* 封面設計 */
+        .cover {
+            background-color: #fdfbf7;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            z-index: 20;
+            padding: 40px;
+            box-sizing: border-box;
+            border: 1px solid #d7ccc8; 
+            position: relative;
+        }
+
+        .cover-inner-border {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 1px solid var(--text-color);
+            pointer-events: none;
+        }
+
+        .cover h1 {
+            font-family: "Noto Serif TC", serif;
+            font-size: 28px;
+            font-weight: 900;
+            margin: 15px 0 25px 0;
+            line-height: 1.3;
+            letter-spacing: 2px;
+            border-bottom: 2px solid var(--text-color);
+            padding-bottom: 20px;
+            width: 85%;
+        }
+
+        .cover h2 {
+            font-family: "Noto Serif TC", serif;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--accent-color);
+            margin-top: 5px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+        }
+
+        .cover-icon {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        /* 內容頁面結構 */
+        .content-page {
+            background: white;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #ddd;
+        }
+
+        .slide-img {
+            width: 100%;
+            height: 85%;
+            background-color: #333;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #aaa;
+            font-size: 14px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .link-area {
+            height: 15%;
+            padding: 5px 15px;
+            display: flex;
+            align-items: center;
+            background: #fff;
+            font-size: 13px;
+            justify-content: space-between;
+            color: var(--text-color);
+            font-weight: 600;
+            border-top: 3px solid #8d6e63;
+        }
+
+        /* 遊戲連結按鈕樣式 */
+        .game-btn {
+            background: var(--game-btn-color);
+            color: #fff;
+            text-decoration: none;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            margin-left: auto; /* 靠右對齊 */
+        }
+
+        .game-btn:hover {
+            background: #1b5e20;
+            transform: scale(1.05);
+        }
+
+        .page-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fdfdfd;
+            transform: rotateY(180deg);
+            backface-visibility: hidden;
+            border-left: 1px solid #ddd;
+        }
+
+        .page-front {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            background: white;
+        }
+
+        .flipped {
+            transform: rotateY(-180deg);
+        }
+
+        /* 層級設定 (總共 15 頁: 封面 + 13張圖 + 封底) */
+        #p1 { z-index: 15; }
+        #p2 { z-index: 14; }
+        #p3 { z-index: 13; }
+        #p4 { z-index: 12; }
+        #p5 { z-index: 11; }
+        #p6 { z-index: 10; }
+        #p7 { z-index: 9; }
+        #p8 { z-index: 8; }
+        #p9 { z-index: 7; }
+        #p10 { z-index: 6; }
+        #p11 { z-index: 5; }
+        #p12 { z-index: 4; }
+        #p13 { z-index: 3; }
+        #p14 { z-index: 2; }
+        #p15 { z-index: 1; }
+
+    </style>
+</head>
+<body>
+
+<div class="scene">
+    <div class="book" id="book">
+        
+        <div class="page" id="p1">
+            <div class="page-front cover">
+                <div class="cover-inner-border"></div>
+                <div class="cover-icon">❖</div>
+                <h1>HLA3057<br>提出建議與小組討論</h1>
+                <h2>Making Suggestions & Discussion</h2>
+                <div style="margin-top:40px; font-size:11px; font-weight:600; letter-spacing:2px; border-top:1px solid #d7ccc8; padding-top:15px; width:30%; font-family: 'Noto Serif TC', serif;">
+                    互動電子教案
+                </div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p2">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P1.jpg');"></div>
+                <div class="link-area">單元介紹</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p3">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P2.jpg');"></div>
+                <div class="link-area">學習目標</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p4">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P3.jpg');"></div>
+                <div class="link-area">提出建議的句型</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p5">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P4.jpg');"></div>
+                <div class="link-area">常見詞彙解析</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p6">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P5.jpg');"></div>
+                <div class="link-area">表達贊同</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p7">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P6.jpg');"></div>
+                <div class="link-area">表達反對</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p8">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P7.jpg');"></div>
+                <div class="link-area">
+                    <span>綜合練習</span>
+                    <a href="https://wordwall.net/tc/resource/79227606" target="_blank" class="game-btn">
+                        🎮 進入小組討論遊戲
+                    </a>
+                </div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p9">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P8.jpg');"></div>
+                <div class="link-area">情境模擬：餐廳場景</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p10">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P9.jpg');"></div>
+                <div class="link-area">如何達成共識</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p11">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P10.jpg');"></div>
+                <div class="link-area">進階句型</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p12">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P11.jpg');"></div>
+                <div class="link-area">小組任務說明</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p13">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P12.jpg');"></div>
+                <div class="link-area">評分標準</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p14">
+            <div class="page-front content-page">
+                <div class="slide-img" style="background-image: url('P13.jpg');"></div>
+                <div class="link-area">總結</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+        <div class="page" id="p15">
+            <div class="page-front cover">
+                <div class="cover-icon">✦</div>
+                <h2>Thank You</h2>
+                <div style="margin-top:20px; font-size:14px;">課程結束</div>
+            </div>
+            <div class="page-back"></div>
+        </div>
+
+    </div>
+</div>
+
+<div class="controls">
+    <button id="prevBtn" disabled>◀ 上一頁</button>
+    <button id="nextBtn">下一頁 ▶</button>
+</div>
+
+<script>
+    const prevBtn = document.querySelector("#prevBtn");
+    const nextBtn = document.querySelector("#nextBtn");
+    
+    // 總頁數 15
+    const maxPages = 15;
+    let currentPage = 1;
+
+    function goNext() {
+        if(currentPage < maxPages) {
+            const currentElement = document.querySelector(`#p${currentPage}`);
+            currentElement.classList.add("flipped");
+            currentPage++;
+            updateButtons();
+        }
+    }
+
+    function goPrev() {
+        if(currentPage > 1) {
+            currentPage--;
+            const currentElement = document.querySelector(`#p${currentPage}`);
+            currentElement.classList.remove("flipped");
+            updateButtons();
+        }
+    }
+
+    function updateButtons() {
+        prevBtn.disabled = currentPage === 1;
+        nextBtn.disabled = currentPage === maxPages;
+    }
+
+    nextBtn.addEventListener("click", goNext);
+    prevBtn.addEventListener("click", goPrev);
+
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "ArrowRight") {
+            goNext();
+        } else if (event.key === "ArrowLeft") {
+            goPrev();
+        }
+    });
+
+</script>
+
+</body>
+</html>
